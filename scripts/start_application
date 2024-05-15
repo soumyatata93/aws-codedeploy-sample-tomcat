@@ -59,7 +59,7 @@ fi
 
 # Configure the Tomcat server HTTP connector
 { which xsltproc; } || { yum install xsltproc; } || { apt-get install xsltproc; }
-cp $CATALINA_HOME/conf/server.xml $CATALINA_HOME/apache-tomcat-7.0.77/conf/server.xml.bak
+cp $CATALINA_HOME/apache-tomcat-7.0.77/conf/server.xml $CATALINA_HOME/apache-tomcat-7.0.77/conf/server.xml.bak
 xsltproc $HTTP_PORT_CONFIG_XSL_LOCATION $CATALINA_HOME/apache-tomcat-7.0.77/conf/server.xml.bak > $CATALINA_HOME/apache-tomcat-7.0.77/conf/server.xml
 
 service tomcat7 start
