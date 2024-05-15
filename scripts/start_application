@@ -44,8 +44,8 @@ if [ ! -d "$CATALINA_HOME/conf" ]; then
 fi
 
 # Check if the server.xml file exists
-if [ ! -f "$CATALINA_HOME/conf/server.xml" ]; then
-    echo "Error: $CATALINA_HOME/conf/server.xml does not exist"
+if [ ! -f "$CATALINA_HOME/apache-tomcat-7.0.77/conf/server.xml" ]; then
+    echo "Error: $CATALINA_HOME/apache-tomcat-7.0.77/conf/server.xml does not exist"
     exit 1
 fi
 
@@ -59,7 +59,7 @@ fi
 
 # Configure the Tomcat server HTTP connector
 { which xsltproc; } || { yum install xsltproc; } || { apt-get install xsltproc; }
-cp $CATALINA_HOME/conf/server.xml $CATALINA_HOME/conf/server.xml.bak
-xsltproc $HTTP_PORT_CONFIG_XSL_LOCATION $CATALINA_HOME/conf/server.xml.bak > $CATALINA_HOME/conf/server.xml
+cp $CATALINA_HOME/conf/server.xml $CATALINA_HOME/apache-tomcat-7.0.77/conf/server.xml.bak
+xsltproc $HTTP_PORT_CONFIG_XSL_LOCATION $CATALINA_HOME/apache-tomcat-7.0.77/conf/server.xml.bak > $CATALINA_HOME/apache-tomcat-7.0.77/conf/server.xml
 
 service tomcat7 start
