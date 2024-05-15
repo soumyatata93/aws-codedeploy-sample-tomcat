@@ -36,6 +36,27 @@ fi
 # Copy the WAR file to the webapps directory
 cp $WAR_STAGED_LOCATION $CATALINA_HOME/webapps/$CONTEXT_PATH.war
 
+
+# Check if the webapps directory exists
+if [ ! -d "$CATALINA_HOME/conf" ]; then
+    # Create the conf directory if it doesn't exist
+    mkdir -p "$CATALINA_HOME/conf"
+fi
+
+# Check if the server.xml file exists
+if [ ! -f "$CATALINA_HOME/conf/server.xml" ]; then
+    echo "Error: $CATALINA_HOME/conf/server.xml does not exist"
+    exit 1
+fi
+
+# Configure the Tomcat server HTTP connector
+XSLTPROC_PATH=$(which xsltproc)
+if [ -z "$XSLTPROC_PATH" ]; then
+    echo "Error: xsltproc command not found"
+    exit 1
+fi
+
+
 # Configure the Tomcat server HTTP connector
 { which xsltproc; } || { yum install xsltproc; } || { apt-get install xsltproc; }
 cp $CATALINA_HOME/conf/server.xml $CATALINA_HOME/conf/server.xml.bak
