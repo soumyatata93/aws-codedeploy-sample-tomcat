@@ -5,33 +5,42 @@ set -e
 CATALINA_HOME=/usr/share/tomcat7-codedeploy
 TOMCAT_VERSION=7.0.77
 
-# Check if required tools are available
-command -v wget >/dev/null 2>&1 || { echo >&2 "wget is required but not installed. Aborting."; exit 1; }
-command -v tar >/dev/null 2>&1 || { echo >&2 "tar is required but not installed. Aborting."; exit 1; }
+# Tar file name
+TOMCAT7_CORE_TAR_FILENAME="apache-tomcat-$TOMCAT_VERSION.tar.gz"
+# Download URL for Tomcat7 core
+TOMCAT7_CORE_DOWNLOAD_URL="https://archive.apache.org/dist/tomcat/tomcat-7/v$TOMCAT_VERSION/bin/$TOMCAT7_CORE_TAR_FILENAME"
+# The top-level directory after unpacking the tar file
+TOMCAT7_CORE_UNPACKED_DIRNAME="apache-tomcat-$TOMCAT_VERSION"
 
-# Check whether Tomcat7 is already installed and running
-if systemctl is-active --quiet tomcat7; then
-    echo "Tomcat7 is already installed and running. Skip reinstalling it."
+
+# Check whether there exists a valid instance
+# of Tomcat7 installed at the specified directory
+[[ -d $CATALINA_HOME ]] && { service tomcat7 status; } && {
+    echo "Tomcat7 is already installed at $CATALINA_HOME. Skip reinstalling it."
     exit 0
-fi
+}
 
 # Clear install directory
-rm -rf "$CATALINA_HOME"
-mkdir -p "$CATALINA_HOME"
-
-# Install libxslt package
-sudo yum install -y libxslt || { echo "Failed to install libxslt package"; exit 1; }
+if [ -d $CATALINA_HOME ]; then
+    rm -rf $CATALINA_HOME
+fi
+mkdir -p $CATALINA_HOME
 
 # Download the latest Tomcat7 version
 cd /tmp
-wget -q "$TOMCAT7_CORE_DOWNLOAD_URL"
-tar xzf "$TOMCAT7_CORE_TAR_FILENAME"
+{ sudo yum install -y libxslt; } || { echo "Failed to install libxslt package"; exit 1; }
 
-# Copy Tomcat files to CATALINA_HOME
-cp -r "/tmp/$TOMCAT7_CORE_UNPACKED_DIRNAME"/* "$CATALINA_HOME"
+wget $TOMCAT7_CORE_DOWNLOAD_URL
+if [[ -d /tmp/$TOMCAT7_CORE_UNPACKED_DIRNAME ]]; then
+    rm -rf /tmp/$TOMCAT7_CORE_UNPACKED_DIRNAME
+fi
+tar xzf $TOMCAT7_CORE_TAR_FILENAME
+
+# Copy over to the CATALINA_HOME
+cp -r /tmp/$TOMCAT7_CORE_UNPACKED_DIRNAME/* $CATALINA_HOME
 
 # Install Java if not yet installed
-command -v java >/dev/null 2>&1 || { sudo yum install -y java; }
+{ which java; } || { yum install -y java; }  # Added -y option here
 
 # Create the service init.d script
 cat > /etc/init.d/tomcat7 <<'EOF'
@@ -59,6 +68,3 @@ EOF
 
 # Change permission mode for the service script
 chmod 755 /etc/init.d/tomcat7
-
-# Inform user that installation is complete
-echo "Tomcat7 installation completed successfully."
