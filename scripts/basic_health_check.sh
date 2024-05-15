@@ -10,5 +10,5 @@ do
   echo "Attempt to curl endpoint returned HTTP Code $HTTP_CODE. Backing off and retrying."
   sleep 10
 done
-echo "Server did not come up after expected time. Failing."
+echo "Error:Server did not come up after expected time. Failing."
 exit 1
