@@ -28,7 +28,7 @@ import java.io.IOException;
 @Configuration
 public class MvcConfiguration extends WebMvcConfigurerAdapter {
     //private static Region region = Regions.getCurrentRegion();
-    private static region="us-east1" 
+    private static region="us-east1";
     @Override
     public void addResourceHandlers(final ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/css/**").addResourceLocations("classpath:/css/");
